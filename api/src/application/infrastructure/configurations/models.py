@@ -52,9 +52,9 @@ class Configuration:
                 )
             )
 
-        if environment == APIEnvironment.local:
+        if environment == APIEnvironment.local.value:
             Configuration.INSTANCE = Configuration._initialize_local_configuration()
-        elif environment == APIEnvironment.test:
+        elif environment == APIEnvironment.test.value:
             Configuration.INSTANCE = Configuration._initialize_test_configuration()
 
         return Configuration.INSTANCE
