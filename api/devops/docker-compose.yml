@@ -1,0 +1,39 @@
+version: '3.7'
+networks:
+  transaction-manager-api-network:
+    driver: bridge
+    name: transaction-manager-api-network
+services:
+  transaction-manager-api-mongo:
+    container_name: transaction-manager-api-mongo
+    image: mongo:3.6
+    restart: always
+    networks:
+      - transaction-manager-api-network
+    volumes:
+      - /data/db/tm-mongo:/data/db
+    ports:
+      - "27017:27017"
+  tm-redis:
+    container_name: tm-redis
+    image: redis:6-alpine
+    networks:
+      - transaction-manager-api-network
+  transaction-manager-api:
+    image: "transaction-manager-api:0.1"
+    container_name: transaction-manager-api
+    restart: always
+    networks:
+      - transaction-manager-api-network
+    environment:
+      TRANSACTION_MANAGER_API_ENVIRONMENT: "local"
+      MONGODB_CONNECTION_URI: "mongodb://transaction-manager-api-mongo:27017"
+      CELERY_BROKER_URL: "redis://tm-redis:6379/0"
+      CELERY_RESULT_BACKEND: "redis://tm-redis:6379/0"
+    depends_on:
+      - transaction-manager-api-mongo
+      - tm-redis
+    ports:
+      - "0.0.0.0:8000:8000"
+    volumes:
+      - /mnt/data:/mnt/data
