@@ -21,6 +21,10 @@ class Configuration:
             mongodb_connection_uri: str,
             celery_broker_url: str,
             celery_result_backend: str,
+            spark_input_uri: str,
+            spark_output_uri: str,
+            spark_driver_memory: str,
+            spark_app_name: str = 'Transaction Manager Spark',
             debug: bool = False,
     ):
         if not mongodb_connection_uri:
@@ -29,12 +33,22 @@ class Configuration:
             raise InvalidArgumentError("The Celery Broker url is required.")
         if not celery_result_backend:
             raise InvalidArgumentError("The Celery Result backend is required.")
+        if not spark_input_uri:
+            raise InvalidArgumentError("The Spark input URI is required.")
+        if not spark_output_uri:
+            raise InvalidArgumentError("The Spark output URI is required.")
+        if not spark_driver_memory:
+            raise InvalidArgumentError("The Spark driver memory is required.")
         if not isinstance(debug, bool):
             raise InvalidArgumentError("The Debug flag is not a boolean.")
 
         self.mongodb_connection_uri = mongodb_connection_uri
         self.celery_broker_url = celery_broker_url
         self.celery_result_backend = celery_result_backend
+        self.spark_input_uri = spark_input_uri
+        self.spark_output_uri = spark_output_uri
+        self.spark_driver_memory = spark_driver_memory
+        self.spark_app_name = spark_app_name
         self.debug = debug
 
     @classmethod
@@ -87,6 +101,10 @@ class Configuration:
             mongodb_connection_uri=os.getenv("MONGODB_CONNECTION_URI"),
             celery_broker_url=os.getenv("CELERY_BROKER_URL"),
             celery_result_backend=os.getenv("CELERY_RESULT_BACKEND"),
+            spark_input_uri=os.getenv("SPARK_INPUT_URI"),
+            spark_output_uri=os.getenv("SPARK_OUTPUT_URI"),
+            spark_app_name=os.getenv("SPARK_APP_NAME"),
+            spark_driver_memory=os.getenv("SPARK_DRIVER_MEMORY"),
             debug=True,
         )
 
@@ -101,5 +119,9 @@ class Configuration:
             mongodb_connection_uri='',
             celery_broker_url="redis://localhost:6379",
             celery_result_backend="redis://localhost:6379",
+            spark_input_uri=os.getenv("SPARK_INPUT_URI"),
+            spark_output_uri=os.getenv("SPARK_OUTPUT_URI"),
+            spark_app_name=os.getenv("SPARK_APP_NAME"),
+            spark_driver_memory=os.getenv("SPARK_DRIVER_MEMORY"),
             debug=True,
         )

@@ -1,39 +1,78 @@
 version: '3.7'
 networks:
-  transaction-manager-api-network:
+  tm-api-network:
     driver: bridge
-    name: transaction-manager-api-network
+    name: tm-api-network
 services:
-  transaction-manager-api-mongo:
-    container_name: transaction-manager-api-mongo
+  tm-api-mongo:
+    container_name: tm-api-mongo
     image: mongo:3.6
     restart: always
     networks:
-      - transaction-manager-api-network
+      - tm-api-network
     volumes:
-      - /data/db/tm-mongo:/data/db
+      - /data/db/mongo:/data/db
     ports:
       - "27017:27017"
   tm-redis:
     container_name: tm-redis
     image: redis:6-alpine
     networks:
-      - transaction-manager-api-network
-  transaction-manager-api:
-    image: "transaction-manager-api:0.1"
-    container_name: transaction-manager-api
+      - tm-api-network
+    ports:
+      - "6379:6379"
+  tm-api:
+    image: "tm-api:0.1"
+    container_name: tm-api
     restart: always
     networks:
-      - transaction-manager-api-network
+      - tm-api-network
     environment:
       TRANSACTION_MANAGER_API_ENVIRONMENT: "local"
-      MONGODB_CONNECTION_URI: "mongodb://transaction-manager-api-mongo:27017"
+      MONGODB_CONNECTION_URI: "mongodb://tm-api-mongo:27017"
       CELERY_BROKER_URL: "redis://tm-redis:6379/0"
       CELERY_RESULT_BACKEND: "redis://tm-redis:6379/0"
+      SPARK_INPUT_URI: "mongodb://tm-api-mongo:27017/transaction_manager.transactions"
+      SPARK_OUTPUT_URI: "mongodb://tm-api-mongo:27017/transaction_manager.transactions"
+      SPARK_DRIVER_MEMORY: "10g"
+      SPARK_APP_NAME: "Transaction Manager Spark"
     depends_on:
-      - transaction-manager-api-mongo
+      - tm-api-mongo
       - tm-redis
     ports:
       - "0.0.0.0:8000:8000"
     volumes:
       - /mnt/data:/mnt/data
+  tm-worker:
+    image: "tm-worker:0.1"
+    container_name: tm-worker
+    command: celery --app application.celery_worker.celery worker -Q file_system_tasks --loglevel=DEBUG
+    restart: always
+    networks:
+      - tm-api-network
+    environment:
+      TRANSACTION_MANAGER_API_ENVIRONMENT: "local"
+      MONGODB_CONNECTION_URI: "mongodb://tm-api-mongo:27017"
+      CELERY_BROKER_URL: "redis://tm-redis:6379/0"
+      CELERY_RESULT_BACKEND: "redis://tm-redis:6379/0"
+      CELERY_TASK_TRACK_STARTED: "true"
+      SPARK_INPUT_URI: "mongodb://tm-api-mongo:27017/transaction_manager.transactions"
+      SPARK_OUTPUT_URI: "mongodb://tm-api-mongo:27017/transaction_manager.transactions"
+      SPARK_DRIVER_MEMORY: "10g"
+      SPARK_APP_NAME: "Transaction Manager Spark"
+    depends_on:
+      - tm-api
+      - tm-redis
+    volumes:
+      - /mnt/data:/mnt/data
+  flower:
+      image: mher/flower
+      networks:
+        - tm-api-network
+      command: ["celery", "--broker=redis://tm-redis:6379/0", "flower"]
+      ports:
+         - 5555:5555
+      depends_on:
+        - tm-api
+        - tm-redis
+        - tm-worker

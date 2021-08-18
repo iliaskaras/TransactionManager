@@ -11,10 +11,12 @@ deploy-local:
 		@echo "=================================== Requirements ====================================="
 		@echo "1. Ensure you have Docker installed and service up and running in your system."
 		@echo "2. Ensure you have Docker Compose installed and with permissions to execute it."
-		sudo docker build -f api/devops/api/Dockerfile -t transaction-manager-api .
-		sudo docker tag transaction-manager-api transaction-manager-api:0.1
+		sudo docker build -f api/devops/api/Dockerfile -t tm-api .
+		sudo docker tag tm-api tm-api:0.1
+		sudo docker build -f api/devops/worker/Dockerfile -t tm-worker .
+		sudo docker tag tm-worker tm-worker:0.1
 		sudo docker-compose -f api/devops/docker-compose.yml up -d
 
 down-services:
 		@echo "======================= Stopping Local Deployment Running Services==============================="
-		sudo docker-compose -f api/devops/docker-compose.yml down
+		sudo docker-compose -f api/devops/docker-compose.yml down --remove-orphans
