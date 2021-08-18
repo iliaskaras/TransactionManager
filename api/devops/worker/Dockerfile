@@ -1,7 +1,7 @@
 FROM python:3.7
 
-ARG transaction_manager_api_user_id=9003
-ARG transaction_manager_api_group_id=9003
+ARG transaction_manager_worker_user_id=9004
+ARG transaction_manager_worker_group_id=9004
 
 # Environment variables such as mongodb_connection_uri should not be displayed like that
 # and instead be passed with some other mechanism that hides these information. Ansible could be used for example.
@@ -27,9 +27,9 @@ ENV SPARK_DRIVER_MEMORY ${spark_driver_memory}
 ENV SPARK_APP_NAME ${spark_app_name}
 
 # Create Transaction Manager API group and user.
-RUN groupadd --system --gid ${transaction_manager_api_group_id} appuser \
+RUN groupadd --system --gid ${transaction_manager_worker_group_id} appuser \
   && useradd --system --shell /usr/sbin/nologin \
-             --gid appuser --uid ${transaction_manager_api_user_id} appuser
+             --gid appuser --uid ${transaction_manager_worker_user_id} appuser
 
 # Install and configure Java, Scala and Spark for local spark deployment.
 RUN apt-get update -y \
@@ -62,7 +62,6 @@ RUN pip3 install -r ${transaction_manager_api_directory}/requirements.txt
 COPY --chown=appuser:appuser "api/src" ${transaction_manager_api_directory}/src/
 
 # Run Transaction Manager API.
-WORKDIR ${transaction_manager_api_directory}
 ENV PYTHONPATH ${transaction_manager_api_directory}/src
+WORKDIR ${transaction_manager_api_directory}/src
 
-ENTRYPOINT ["uvicorn", "application.main:application", "--host", "0.0.0.0", "--port", "8000"]
