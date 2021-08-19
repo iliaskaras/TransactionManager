@@ -6,4 +6,5 @@ from pydantic.dataclasses import dataclass
 @dataclass
 class DataIngestionPostRequestBody:
     filepath: str
-    data_address: Optional[str] = "'Online Retail'!A1"
+    excel_sheet_name: Optional[str] = "'Online Retail'!A1"
+
