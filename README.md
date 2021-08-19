@@ -48,14 +48,12 @@ make deploy-local
 
 ### Testing the REST API
 
-* A collection of Postman ****TransactionManager.postman_collection.json**** requests is provided under the TransactionManager directory, import and:
+* A collection of Postman ****TransactionManager.postman_collection.json**** requests is provided under the TransactionManager directory, import it.
 * The Excel file that you will be using to ingest and initialize the MongoDB database 
   ****should locate under the '/mnt/data' directory, because this directory is volumed to the rest api docker container.****
+* Deploy the application using the above mentioned 'make deploy-local' command at the root directory.
+* Run the ingest endpoint and then the rest of the endpoints imported from the postman collection.  
 
-* Run tests with the Makefile command: 
-```
-make run-tests
-```
 
 ## Version History
 
