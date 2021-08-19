@@ -1,4 +1,4 @@
-from application.transactions.repository import TransactionRepository
+from application.transactions.repositories import TransactionRepository
 from application.transactions.services import GetTransactionsGroupedByService, GetMostSoldStockCodeService, \
     GetCustomerWithMostSpentMoneyService, GetAverageUnitPriceService, GetPriceAndQuantityRatioService
 

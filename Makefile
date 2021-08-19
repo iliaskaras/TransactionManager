@@ -4,6 +4,7 @@ help:
 	@echo " "
 	@echo "- make deploy-local"
 	@echo "- make down-services"
+	@echo "- make run-tests"
 	@echo " "
 
 deploy-local:
@@ -20,3 +21,6 @@ deploy-local:
 down-services:
 		@echo "======================= Stopping Local Deployment Running Services==============================="
 		sudo docker-compose -f api/devops/docker-compose.yml down --remove-orphans
+
+run-tests:
+		pytest -v api/src/tests/application/unit_tests
