@@ -36,7 +36,7 @@ class AppSparkSession:
 
         :return: The initialized SparkSession instance.
 
-        :raise SparkConfigNotInitializedError: If the SparkConfig has not been initialized.
+        :raises SparkConfigNotInitializedError: If the SparkConfig has not been initialized.
         """
 
         if not AppSparkSession.INSTANCE:
