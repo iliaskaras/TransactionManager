@@ -5,7 +5,7 @@ from pyspark import Row
 from application.infrastructure.error.errors import InvalidArgumentError, NoneArgumentError
 from application.transactions.enums import TransactionColumns
 from application.transactions.errors import TransactionNotFoundError
-from application.transactions.repository import TransactionRepository
+from application.transactions.repositories import TransactionRepository
 import itertools
 
 
@@ -36,7 +36,7 @@ class GetTransactionsGroupedByService:
         for col in group_by_cols:
             if col not in TransactionColumns.values():
                 raise InvalidArgumentError(
-                    '"{}" is not a transaction field. Choose among: {}'.format(
+                    '"{0}" is not a transaction field. Choose among: {1}'.format(
                         col,
                         TransactionColumns.values()
                     )

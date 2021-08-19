@@ -3,7 +3,7 @@ from typing import List, Optional
 from pyspark import Row
 import pyspark.sql.functions as f
 
-from application.infrastructure.database.repository import BaseSparkRepository
+from application.infrastructure.database.repositories import BaseSparkRepository
 from pyspark.sql.functions import sort_array, collect_list
 from pyspark.sql.functions import sum as pyspark_sum
 
@@ -40,9 +40,8 @@ class TransactionRepository(BaseSparkRepository):
         """
         Returns the most sold stock code.
 
-        :return A Row containing:
-            1) 'stock_code': The most sold stock code.
-            2) 'total_sold': The sum of the stock code quantities.
+        :return A Row containing information about the most sold stock code. Example:
+                Row(StockCode='1', total_quantities=10)
         """
         return self.spark_session.read.format("mongo").load().groupBy(
             'StockCode'
@@ -95,8 +94,14 @@ class TransactionRepository(BaseSparkRepository):
         Returns the ratio between price and quantity for each invoice.
 
         :return A Rows containing the ratio between price and quantity for each invoice:
-            1) 'InvoiceNo': The invoice id.
+            1) 'invoice_no': The invoice id.
             2) 'ratio': The ratio.
+            Example:
+                [
+                    Row(invoice_no='1', ratio=0.1),
+                    ...
+                    Row(invoice_no='N', ratio=0.55)
+                ]
         """
         return self.spark_session.read.format("mongo").load() \
             .groupby(['InvoiceNo', 'UnitPrice', 'Quantity']) \
