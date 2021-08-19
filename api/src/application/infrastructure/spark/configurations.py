@@ -1,4 +1,4 @@
-from pyspark import SparkConf, SparkContext
+from pyspark import SparkConf
 
 from application.infrastructure.configurations.models import Configuration
 from pyspark.sql import SparkSession
@@ -11,6 +11,9 @@ class AppSparkSession:
 
     @classmethod
     def initialize(cls) -> None:
+        """
+        Initializes the SparkSession instance with its Spark Configurations.
+        """
         if not cls.INSTANCE:
             configuration: Configuration = Configuration.get_instance()
             spark_conf = SparkConf()
@@ -24,14 +27,12 @@ class AppSparkSession:
             spark_conf.set('spark.driver.memory', configuration.spark_driver_memory)
             spark_conf.setAppName(configuration.spark_app_name)
 
-            cls.spark_context: SparkContext = SparkContext(conf=spark_conf)
-
             cls.INSTANCE: SparkSession = SparkSession.builder.config(conf=spark_conf).getOrCreate()
 
     @staticmethod
     def get_instance() -> SparkSession:
         """
-        Returns the already initialized application SparkSession instance.
+        Returns the initialized application SparkSession instance.
 
         :return: The initialized SparkSession instance.
 

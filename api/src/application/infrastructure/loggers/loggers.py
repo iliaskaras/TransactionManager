@@ -17,7 +17,7 @@ class TransactionManagerAppLoggerFactory:
 
         stream_handler = logging.StreamHandler(sys.stderr)
         stream_handler.setFormatter(
-            logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(funcName)s")
+            logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(funcName)s - %(message)s")
         )
         logger.addHandler(stream_handler)
 

@@ -1,30 +1,17 @@
-from celery import states
-from celery.result import AsyncResult
 from fastapi import APIRouter
-from starlette.responses import JSONResponse
+
+from application.tasks.models import TaskStatus
+from application.tasks.services import GetTaskStatusReportService
 
 router = APIRouter()
 
 
-@router.get("/tasks/{task_id}")
-async def get_status(task_id):
-    task_result = AsyncResult(task_id)
+@router.get("/task-status/{task_id}")
+async def get_task_status_details(task_id) -> TaskStatus:
+    """
+    Entrypoint for celery task status monitoring.
 
-    if task_result.state == states.STARTED:
-        response = {
-            "task_id": task_id,
-            "task_status": task_result.status,
-            "task_result": task_result.result
-        }
-    elif task_result.state == states.FAILURE:
-        return JSONResponse(task_result.result)
-    else:
-        response = {
-            "task_id": task_id,
-            "task_status": task_result.status,
-            "task_result": task_result.result
-        }
-
-    return JSONResponse(response)
-
-
+    :param task_id: The celery task id.
+    :return The task status report.
+    """
+    return GetTaskStatusReportService().apply(task_id=task_id)

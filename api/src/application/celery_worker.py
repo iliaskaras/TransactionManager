@@ -11,9 +11,14 @@ Configuration.initialize()
 # Initialize Application Spark Session.
 AppSparkSession.initialize()
 
+# Initialize Celery.
 celery = Celery(
     'Transaction Manager API',
-    include=['application.rest_api.data_ingestion.tasks'],
+    # Register tasks.
+    include=[
+        'application.data_ingestion.tasks',
+        'application.transactions.tasks',
+    ],
 )
 
 celery.conf.broker_url = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379")

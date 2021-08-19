@@ -46,7 +46,7 @@ services:
   tm-worker:
     image: "tm-worker:0.1"
     container_name: tm-worker
-    command: celery --app application.celery_worker.celery worker -Q file_system_tasks --loglevel=DEBUG
+    command: celery --app application.celery_worker.celery worker -Q file_system_tasks,transaction_tasks --loglevel=INFO
     restart: always
     networks:
       - tm-api-network
