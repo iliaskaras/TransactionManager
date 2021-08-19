@@ -80,7 +80,7 @@ class Configuration:
 
         :return: The initialized configuration instance.
 
-        :raise ConfigurationNotInitializedError: If the configuration has not been initialized.
+        :raises ConfigurationNotInitializedError: If the configuration has not been initialized.
         """
 
         if not Configuration.INSTANCE:
